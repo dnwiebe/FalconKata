@@ -1,0 +1,27 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+
+void storyTest (char* problem, char* answer) {
+  FILE* fp;
+  char command[80];
+  char result[80];
+
+  snprintf (command, sizeof (command), "echo \"%s\" | target/falconkata > /tmp/falconkata.out", problem);
+  result[0] = 0;
+
+  system (command);
+
+  ck_assert_msg (errno == 0, "command failed");
+  fp = fopen ("/tmp/falconkata.out", "r");
+  ck_assert_msg (fp != NULL, "/tmp/falconkata.out not found");
+  fgets (result, sizeof (result), fp);
+  fclose (fp);
+  ck_assert_str_eq (result, answer);
+}
+
+#test addsNumbers
+  storyTest ("CXLVI + MMII\n", "MMCXLVIII\n");
+
+#test performsMultipleOperations
+  storyTest ("MMCXLVIII - MMII\nCXLVI + MMII\n", "CXLVI\nMMCXLVIII\n");

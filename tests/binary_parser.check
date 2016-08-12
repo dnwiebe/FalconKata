@@ -1,0 +1,3 @@
+#test
+  ck_abort_msg ("Failing unit test");
+  
