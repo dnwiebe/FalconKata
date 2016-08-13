@@ -1,0 +1,42 @@
+#include "binary_parser.h"
+
+char record[10][80];
+int recordCount = 0;
+void recordString (const char* string) {
+  if (recordCount >= 10) {return;}
+  strncpy (record[recordCount++], string, 80);
+}
+
+int mockOperation (const char* leftOperand, const char* operator, const char* rightOperand, char* result, int len) {
+  recordString (leftOperand);
+  recordString (operator);
+  recordString (rightOperand);
+  strncpy (result, operator, len);
+  return 0;
+}
+
+int percentOperation (const char* leftOperand, const char* rightOperand, char* result, int len) {
+  return mockOperation (leftOperand, "percent", rightOperand, result, len);
+}
+
+int ampersandOperation (const char* leftOperand, const char* rightOperand, char* result, int len) {
+  return mockOperation (leftOperand, "ampersand", rightOperand, result, len);
+}
+
+const BinaryOperation operations[] = {
+  {"%", &percentOperation},
+  {"&", &ampersandOperation}
+};
+
+#test parsesGoodInput
+  char result[80];
+  performBinaryOperations (operations, "Stanley & Emily\nMorgan % Kim\n", result, sizeof (result));
+  
+  ck_assert_str_eq (result, "ampersand\npercent\n");
+  ck_assert_str_eq (record[0], "Stanley");
+  ck_assert_str_eq (record[1], "ampersand");
+  ck_assert_str_eq (record[2], "Emily");
+  ck_assert_str_eq (record[3], "Morgan");
+  ck_assert_str_eq (record[4], "percent");
+  ck_assert_str_eq (record[5], "Kim");
+  

@@ -2,10 +2,10 @@
 #define BINARY_PARSER_H_
 
 typedef struct {
-  char* operator;
-  char* (*operation) (char* leftOperand, char* rightOperand);
+  const char* operator;
+  int (*operation) (const char* leftOperand, const char* rightOperand, char* result, int len);
 } BinaryOperation;
 
-char* performBinaryOperations (BinaryOperation* operations, char* input);
+int performBinaryOperations (const BinaryOperation* operations, const char* input, char* result, int len);
 
 #endif /* BINARY_PARSER_H_ */

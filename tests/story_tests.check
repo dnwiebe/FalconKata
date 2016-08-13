@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-void storyTest (char* problem, char* answer) {
+void storyTest (const char* problem, const char* answer) {
   FILE* fp;
   char command[80];
   char result[80];

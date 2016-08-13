@@ -1,15 +1,17 @@
 
 CC=gcc
-CFLAGS=-I. -Wall
+PROD_CFLAGS=-I. -Wall
 TEST_LIBS=-lcheck -lm -lpthread -lrt
 SRC=src
 TEST=tests
+TEST_CFLAGS=-I$(SRC) -Wall
 TARGET=target
 PROD_TARGET=$(TARGET)
 TEST_TARGET=$(TARGET)/$(TEST)
 HEADERS=src/binary_parser.h
-PROD_OBJECTS=$(PROD_TARGET)/binary_parser.o $(PROD_TARGET)/main.o
-TEST_EXECS=$(TEST_TARGET)/story_tests
+PROD_OBJECTS=$(PROD_TARGET)/binary_parser.o
+PROD_MAIN_OBJECT=$(PROD_TARGET)/main.o
+TEST_EXECS=$(TEST_TARGET)/story_tests $(TEST_TARGET)/binary_parser_test
 	
 .PHONY: pre-build prod test all
 
@@ -20,22 +22,23 @@ $(PROD_TARGET):
 	mkdir -p $(PROD_TARGET)
 
 $(PROD_TARGET)/%.o: $(SRC)/%.c $(PROD_TARGET) $(HEADERS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(PROD_CFLAGS)
 
 $(TEST_TARGET)/%.o: $(TEST_TARGET)/%.c $(PROD_TARGET) $(TEST_TARGET) $(HEADERS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(TEST_CFLAGS)
 
 $(TEST_TARGET)/%.c: $(TEST)/%.check $(TEST_TARGET) $(HEADERS)
 	checkmk $< > $@
 	cp $@ /tmp
 
-prod: $(PROD_OBJECTS)
+prod: $(PROD_OBJECTS) $(PROD_MAIN_OBJECT)
 	$(CC) -o $(PROD_TARGET)/falconkata $^
 
 $(TEST_TARGET)/%: $(TEST_TARGET)/%.o prod
-	$(CC) -o $@ $< $(TEST_LIBS)
+	$(CC) -o $@ $< $(PROD_OBJECTS) $(TEST_LIBS)
+
 
 test: $(PROD_OBJECTS) $(TEST_EXECS)
-	$(CC) -o $(TEST_TARGET)/falconkata_test $(PROD_OBJECTS) $(TEST_OBJECTS) $(TEST_LIBS)
 
 all: prod test
+

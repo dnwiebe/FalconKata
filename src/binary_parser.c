@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include "binary_parser.h"
 
-char* performBinaryOperations (BinaryOperation* operations, char* input) {
-  return NULL;
+int performBinaryOperations (const BinaryOperation* operations, const char* input, char* result, int len) {
+  return 1;
 }
