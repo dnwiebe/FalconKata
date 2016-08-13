@@ -7,7 +7,7 @@
 const char* nextLine (const char* remainingInput, char* line, int len) {
   const char* p = remainingInput;
   char* q = line;
-  while ((*p != '\n') && (*p != 0) && ((q - line) < len)) {
+  while ((*p != '\n') && (*p != 0) && ((q - line) < len - 1)) {
     *q++ = *p++;
   }
   *q = 0;
@@ -32,10 +32,8 @@ int parseLine (char* line, char** leftOperand, char** operator, char** rightOper
   regmatch_t matches[4];
   initializeLINE_PARSERIfNecessary ();
 
-  // Test for non-matching regex
   int result = regexec (&LINE_PARSER, line, 4, matches, 0);
-  char msg[240];
-  regerror (result, &LINE_PARSER, msg, sizeof (msg));
+  if (result != 0) {return result;}
 
   *leftOperand = matchedSubstring (&matches[1], line);
   *operator = matchedSubstring (&matches[2], line);

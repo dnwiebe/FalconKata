@@ -29,13 +29,14 @@ const BinaryOperation operations[] = {
   {"&", &ampersandOperation}
 };
 
-const char* nextLine (const char* input, const char* remainingInput, char* line, int len);
+const char* nextLine (const char* remainingInput, char* line, int len);
 int parseLine (char* line, char** leftOperand, char** operand, char** rightOperand);
-const BinaryOperation* selectOperation (const BinaryOperation operations[], const char* operator);
+const BinaryOperation* selectOperation (const BinaryOperation operations[], int count, const char* operator);
 
 #test parsesGoodInput
   char result[80];
-  performBinaryOperations (operations, 2, " Stanley  & Emily \nMorgan\t% Kim\n", result, sizeof (result));
+  
+  performBinaryOperations (operations, 2, " Stanley  & Emily \nMorgan %\tKim\n", result, sizeof (result));
   
   ck_assert_str_eq (result, "ampersand\npercent\n");
   ck_assert_str_eq (record[0], "Stanley");
@@ -44,4 +45,56 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], cons
   ck_assert_str_eq (record[3], "Morgan");
   ck_assert_str_eq (record[4], "percent");
   ck_assert_str_eq (record[5], "Kim");
+
+#test nextLineHandlesStringWithoutNewline
+  char line[80];
+  char* input = "No terminating newline";
   
+  const char* result = nextLine (input, line, sizeof (line));
+  
+  ck_assert_str_eq (line, "No terminating newline");
+  ck_assert_int_eq (result, input + strlen (input));
+  ck_assert_int_eq (*result, 0);
+
+#test nextLineHandlesAttemptedOverrun
+  char line[8];
+  char* input = "Overrunning";
+  
+  const char* result = nextLine (input, line, sizeof (line));
+  
+  ck_assert_str_eq (line, "Overrun");
+  ck_assert_int_eq (result, input + 7);
+  ck_assert_int_eq (*result, 'n');
+
+#test nextLineHandlesJustBarelyNotOverrun
+  char line[10];
+  char* input = "Just fits";
+  
+  const char* result = nextLine (input, line, sizeof (line));
+  
+  ck_assert_str_eq (line, "Just fits");
+  ck_assert_int_eq (result, input + 9);
+  ck_assert_int_eq (*result, 0);
+
+#test parseLineReturnsErrorAndDoesntTouchPointersIfLineDoesntMatch
+  char* line = "Doesn't match";
+  char* initialValue = "";
+  char* leftOperand = initialValue;
+  char* operator = initialValue;
+  char* rightOperand = initialValue;
+  
+  int result = parseLine (line, &leftOperand, &operator, &rightOperand);
+  
+  ck_assert (result != 0);
+  ck_assert_str_eq (line, "Doesn't match");
+  ck_assert_int_eq (leftOperand, initialValue);
+  ck_assert_int_eq (operator, initialValue);
+  ck_assert_int_eq (rightOperand, initialValue);
+  
+#test selectOperationReturnsNULLIfIndicatedOperationNotFound
+
+  const BinaryOperation* result = selectOperation (operations, 2, "booga");
+  
+  ck_assert_int_eq (result, NULL);
+  
+ 
