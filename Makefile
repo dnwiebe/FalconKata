@@ -4,7 +4,7 @@ PROD_CFLAGS=-I. -Wall
 TEST_LIBS=-lcheck -lm -lpthread -lrt
 SRC=src
 TEST=tests
-TEST_CFLAGS=-I$(SRC) -Wall
+TEST_CFLAGS=-I$(SRC) -g -Wall
 TARGET=target
 PROD_TARGET=$(TARGET)
 TEST_TARGET=$(TARGET)/$(TEST)
@@ -36,7 +36,6 @@ prod: $(PROD_OBJECTS) $(PROD_MAIN_OBJECT)
 
 $(TEST_TARGET)/%: $(TEST_TARGET)/%.o prod
 	$(CC) -o $@ $< $(PROD_OBJECTS) $(TEST_LIBS)
-
 
 test: $(PROD_OBJECTS) $(TEST_EXECS)
 

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "binary_parser.h"
 
 char record[10][80];
@@ -28,9 +29,13 @@ const BinaryOperation operations[] = {
   {"&", &ampersandOperation}
 };
 
+const char* nextLine (const char* input, const char* remainingInput, char* line, int len);
+int parseLine (char* line, char** leftOperand, char** operand, char** rightOperand);
+const BinaryOperation* selectOperation (const BinaryOperation operations[], const char* operator);
+
 #test parsesGoodInput
   char result[80];
-  performBinaryOperations (operations, "Stanley & Emily\nMorgan % Kim\n", result, sizeof (result));
+  performBinaryOperations (operations, 2, " Stanley  & Emily \nMorgan\t% Kim\n", result, sizeof (result));
   
   ck_assert_str_eq (result, "ampersand\npercent\n");
   ck_assert_str_eq (record[0], "Stanley");
