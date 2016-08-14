@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "converters.h"
 
 typedef struct {
@@ -31,6 +32,7 @@ Conversion expectedConversions[] = {
   {"CM", 900},
   {"M", 1000},
   {"MMXVI", 2016},
+  {"MMMDCCCLXXXVIII", 3888},
   {"MMMCMXCIX", 3999}
 };
 
@@ -52,12 +54,17 @@ Conversion expectedConversions[] = {
 
 #test convertRtoAHandlesBadString
   int status;
-  int arabic = 0;
   
-  status = convertRtoA ("Booga booga", &arabic);
+  status = convertRtoA ("Booga booga", NULL);
 
   ck_assert_int_eq (status, RC_INVALID_ROMAN_NUMERAL);
-  ck_assert_int_eq (arabic, 0);
+
+#test convertRtoAHandlesBadValue
+  int status;
+  
+  status = convertRtoA ("MMMM", NULL);
+
+  ck_assert_int_eq (status, RC_NUMBER_OUT_OF_RANGE);
 
 #test convertAtoRHandlesGoodInput
   int count = sizeof (expectedConversions) / sizeof (Conversion);
@@ -72,5 +79,30 @@ Conversion expectedConversions[] = {
     status = convertAtoR (conversion->arabic, roman, sizeof (roman));
     
     ck_assert_int_eq (status, 0);
-    ck_assert_int_eq (roman, conversion->roman);
+    ck_assert_str_eq (roman, conversion->roman);
   }
+
+#test convertAtoRHandlesOutOfRangeLow
+  int status;
+  
+  status = convertAtoR (0, NULL, 0);
+
+  ck_assert_int_eq (status, RC_NUMBER_OUT_OF_RANGE);
+
+#test convertAtoRHandlesOutOfRangeHigh
+  int status;
+  
+  status = convertAtoR (4000, NULL, 0);
+
+  ck_assert_int_eq (status, RC_NUMBER_OUT_OF_RANGE);
+
+#test convertAtoRHandlesOutputOverrun
+  int status;
+  char roman[3];
+  
+  strcpy (roman, "..");
+  
+  status = convertAtoR (3, NULL, 3);
+
+  ck_assert_int_eq (status, RC_OUTPUT_OVERRUN);
+  ck_assert_str_eq (roman, "..");
