@@ -12,7 +12,7 @@ int romanBinaryArithmetic (ConversionPair *pair, const char* first, const char* 
   status = pair->romanToArabic (second, &secondA);
   if (status != 0) {return status;}
   resultA = compute (firstA, secondA);
-  status = pair->arabicToRoman (resultA, result, sizeof (result));
+  status = pair->arabicToRoman (resultA, result, len);
   return status;
 }
 

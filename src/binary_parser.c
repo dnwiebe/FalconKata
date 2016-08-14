@@ -127,10 +127,10 @@ int performBinaryOperations (const BinaryOperation* operations, int count, const
   const char* remainingInput = input;
   char line[80];
   int returnValue = 0;
+  *result = 0;
 
   while ((*remainingInput != 0) && (strlen (result) < len - 1)) {
     remainingInput = nextLine (remainingInput, line, sizeof (line));
-
     processLine (operations, count, line, &returnValue, result, len);
   }
   return returnValue;

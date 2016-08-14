@@ -2,17 +2,18 @@
 #include <stdio.h>
 #include <errno.h>
 
-void storyTest (const char* problem, const char* answer) {
+void storyTest (const char* problem, const char* answer, int expectedStatus) {
   FILE* fp;
   char command[80];
   char result[80];
+  int status;
 
-  snprintf (command, sizeof (command), "echo \"%s\" | target/falconkata > /tmp/falconkata.out", problem);
+  snprintf (command, sizeof (command), "bash -c \"echo \\\"%s\\\" | target/falconkata > /tmp/falconkata.out\"", problem);
   result[0] = 0;
 
-  system (command);
+  status = system (command) >> 8;
 
-  ck_assert_msg (errno == 0, "command failed");
+  ck_assert_int_eq (status, expectedStatus);
   fp = fopen ("/tmp/falconkata.out", "r");
   ck_assert_msg (fp != NULL, "/tmp/falconkata.out not found");
   fgets (result, sizeof (result), fp);
@@ -21,7 +22,13 @@ void storyTest (const char* problem, const char* answer) {
 }
 
 #test addsNumbers
-  storyTest ("CXLVI + MMII\n", "MMCXLVIII\n");
+  storyTest ("CXLVI + VI", "CLII\n", 0);
 
-#test performsMultipleOperations
-  storyTest ("MMCXLVIII - MMII\nCXLVI + MMII\n", "CXLVI\nMMCXLVIII\n");
+#test subtractsNumbers
+  storyTest ("MMCXLVIII - MMII", "CXLVI\n", 0);
+  
+#test handlesBadInput
+  storyTest ("Booga booga", "# Booga booga\n", 1); // Unparseable line
+  storyTest ("II & III", "# II & III\n", 1); // Unrecognized operator
+  storyTest ("II - K", "# II - K\n", 1); // Bad Roman numeral
+  storyTest ("MM + MM", "# MM + MM\n", 1); // Overflow

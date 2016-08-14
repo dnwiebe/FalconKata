@@ -39,5 +39,8 @@ $(TEST_TARGET)/%: $(TEST_TARGET)/%.o prod
 
 test: $(PROD_OBJECTS) $(TEST_EXECS)
 
-all: prod test
+runtests: test
+	./runtests.sh
+
+all: prod test runtests
 
