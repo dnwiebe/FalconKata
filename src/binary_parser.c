@@ -5,20 +5,20 @@
 
 
 const char* nextLine (const char* remainingInput, char* line, int len) {
-  const char* p = remainingInput;
-  char* q = line;
-  while ((*p != '\n') && (*p != 0) && ((q - line) < len - 1)) {
-    *q++ = *p++;
+  const char* in = remainingInput;
+  char* out = line;
+  while ((*in != '\n') && (*in != 0) && ((out - line) < len - 1)) {
+    *out++ = *in++;
   }
-  *q = 0;
-  return (*p == '\n') ? p + 1 : p;
+  *out = 0;
+  return (*in == '\n') ? in + 1 : in;
 }
 
 regex_t LINE_PARSER;
 int LINE_PARSER_COMPILED = 0;
 void initializeLINE_PARSERIfNecessary () {
   if (LINE_PARSER_COMPILED) {return;}
-  int result = regcomp (&LINE_PARSER, "^\\s*([^ ]+)\\s+([^ ]+)\\s+([^ ]+)\\s*$", REG_EXTENDED);
+  regcomp (&LINE_PARSER, "^\\s*([^ ]+)\\s+([^ ]+)\\s+([^ ]+)\\s*$", REG_EXTENDED);
   LINE_PARSER_COMPILED = 1;
 }
 
@@ -53,32 +53,65 @@ const BinaryOperation* selectOperation (const BinaryOperation* operations, int c
   return NULL;
 }
 
+int strncatWithNewline (char* dest, int len, const char* src) {
+  int lenWithTerm = len - 1;
+  int resultLeft = lenWithTerm - strlen (dest);
+  strncat (dest, src, resultLeft);
+  resultLeft = lenWithTerm - strlen (dest);
+  if (resultLeft <= 0) {
+    return 1;
+  }
+  resultLeft = lenWithTerm - strlen (dest);
+  if (resultLeft <= 0) {
+    return 1;
+  }
+  strncat (dest, "\n", 1);
+  return 0;
+}
+
+int PBO_INVALID_INPUT = 1;
+int PBO_UNKNOWN_OPERATOR = 2;
+int PBO_OPERATOR_FAILED = 3;
+int PBO_OUTPUT_TRUNCATED = 4;
+
 int performBinaryOperations (const BinaryOperation* operations, int count, const char* input, char* result, int len) {
   const char* remainingInput = input;
-  char* output = result;
   char line[80];
+  char lineCopy[80];
   char* leftOperand;
   char* operator;
   char* rightOperand;
+  char answer[80];
+  int status;
+  int returnValue = 0;
+  const BinaryOperation* operation;
 
-  // add test for input overrun
-  // add test for output overrun
-  while (*remainingInput != 0) {
-    // Need test for input ending with \n
-    // Need test for input ending with other than \n
+  while ((*remainingInput != 0) && (strlen (result) < len - 1)) {
     remainingInput = nextLine (remainingInput, line, sizeof (line));
 
-    // Need lots of tests for invalid input
-    parseLine (line, &leftOperand, &operator, &rightOperand);
-
-    // Need test for unknown operator
-    const BinaryOperation* operation = selectOperation (operations, count, operator);
-
-    // Need test for operation failure
-    operation->operation (leftOperand, rightOperand, output, len - (output - result));
-    output = result + strlen(result);
-    // Need test for output overrunning result
-    *output++ = '\n';
+    strncpy (lineCopy, line, sizeof (lineCopy));
+    status = parseLine (lineCopy, &leftOperand, &operator, &rightOperand);
+    if (status != 0) {
+      strncpy (answer, line, sizeof (answer));
+      returnValue = PBO_INVALID_INPUT;
+    }
+    else {
+      operation = selectOperation (operations, count, operator);
+      if (operation == NULL) {
+        strncpy (answer, line, sizeof (answer));
+        returnValue = PBO_UNKNOWN_OPERATOR;
+      }
+      else {
+        if (operation->operation (leftOperand, rightOperand, answer, sizeof (answer)) != 0) {
+          strncpy (answer, line, sizeof (answer));
+          returnValue = PBO_OPERATOR_FAILED;
+        }
+      }
+    }
+    status = strncatWithNewline (result, len, answer);
+    if (status != 0) {
+      returnValue = PBO_OUTPUT_TRUNCATED;
+    }
   }
-  return 0;
+  return returnValue;
 }

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "binary_parser.h"
 
 char record[10][80];
@@ -24,6 +26,11 @@ int ampersandOperation (const char* leftOperand, const char* rightOperand, char*
   return mockOperation (leftOperand, "ampersand", rightOperand, result, len);
 }
 
+int failingOperation (const char* leftOperand, const char* rightOperand, char* result, int len) {
+  mockOperation (leftOperand, "exclamation", rightOperand, result, len);
+  return 1;
+}
+
 const BinaryOperation operations[] = {
   {"%", &percentOperation},
   {"&", &ampersandOperation}
@@ -36,8 +43,9 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
 #test parsesGoodInput
   char result[80];
   
-  performBinaryOperations (operations, 2, " Stanley  & Emily \nMorgan %\tKim\n", result, sizeof (result));
+  int status = performBinaryOperations (operations, 2, " Stanley  & Emily \nMorgan %\tKim\n", result, sizeof (result));
   
+  ck_assert_int_eq (status, 0);
   ck_assert_str_eq (result, "ampersand\npercent\n");
   ck_assert_str_eq (record[0], "Stanley");
   ck_assert_str_eq (record[1], "ampersand");
@@ -45,6 +53,44 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
   ck_assert_str_eq (record[3], "Morgan");
   ck_assert_str_eq (record[4], "percent");
   ck_assert_str_eq (record[5], "Kim");
+
+#test truncatesOutputAndComplainsIfProvidedSpaceTooSmall
+  char result[6];
+  
+  int status = performBinaryOperations (operations, 2, "Stanley & Emily", result, 6);
+  
+  ck_assert_int_eq (status, PBO_OUTPUT_TRUNCATED);
+  ck_assert_str_eq (result, "amper");
+  ck_assert_str_eq (record[0], "Stanley");
+  ck_assert_str_eq (record[1], "ampersand");
+  ck_assert_str_eq (record[2], "Emily");
+  
+#test copiesInvalidInputToOutputWithoutModification
+  char result[80];
+  
+  int status = performBinaryOperations (operations, 2, "Booga booga!\nMorgan % Kim\n", result, sizeof (result));
+  
+  ck_assert_int_eq (status, PBO_INVALID_INPUT);
+  ck_assert_str_eq (result, "Booga booga!\npercent\n");
+
+#test copiesInputWithUnknownOperatorToOutputWithoutModification
+  char result[80];
+  
+  int status = performBinaryOperations (operations, 2, "Tom * Becky\n", result, sizeof (result));
+  
+  ck_assert_int_eq (status, PBO_UNKNOWN_OPERATOR);
+  ck_assert_str_eq (result, "Tom * Becky\n");
+
+#test copiesInputToOutputWithoutModificationWhenOperatorFails
+  char result[80];
+  const BinaryOperation operations[] = {
+    {"!", &failingOperation}
+  };
+  
+  int status = performBinaryOperations (operations, 1, "up ! set\n", result, sizeof (result));
+  
+  ck_assert_int_eq (status, PBO_OPERATOR_FAILED);
+  ck_assert_str_eq (result, "up ! set\n");
 
 #test nextLineHandlesStringWithoutNewline
   char line[80];

@@ -8,4 +8,9 @@ typedef struct {
 
 int performBinaryOperations (const BinaryOperation* operations, int count, const char* input, char* result, int len);
 
+int PBO_INVALID_INPUT;
+int PBO_UNKNOWN_OPERATOR;
+int PBO_OPERATOR_FAILED;
+int PBO_OUTPUT_TRUNCATED;
+
 #endif /* BINARY_PARSER_H_ */
