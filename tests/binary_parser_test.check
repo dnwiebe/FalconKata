@@ -121,13 +121,31 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
   ck_assert_str_eq (line, "Just fits");
   ck_assert_int_eq (result, input + 9);
   ck_assert_int_eq (*result, 0);
-
-#test parseLineReturnsErrorAndDoesntTouchPointersIfLineDoesntMatch
-  char* line = "Doesn't match";
+  
+#test parseLineHandlesGoodInput
+  char line[80];
   char* initialValue = "";
   char* leftOperand = initialValue;
   char* operator = initialValue;
   char* rightOperand = initialValue;
+  
+  strncpy (line, "first second third", sizeof (line));
+  
+  int result = parseLine (line, &leftOperand, &operator, &rightOperand);
+  
+  ck_assert_str_eq (leftOperand, "first");
+  ck_assert_str_eq (operator, "second");
+  ck_assert_str_eq (rightOperand, "third");
+  ck_assert_int_eq (result, 0);
+
+#test parseLineReturnsErrorAndDoesntTouchPointersIfLineDoesntMatch
+  char line[80];
+  char* initialValue = "";
+  char* leftOperand = initialValue;
+  char* operator = initialValue;
+  char* rightOperand = initialValue;
+  
+  strncpy (line, "Doesn't match", sizeof (line));
   
   int result = parseLine (line, &leftOperand, &operator, &rightOperand);
   
