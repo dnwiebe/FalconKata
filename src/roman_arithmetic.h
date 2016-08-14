@@ -1,9 +1,3 @@
-/*
- * roman_arithmetic.h
- *
- *  Created on: Aug 14, 2016
- *      Author: dnwiebe
- */
 
 #ifndef ROMAN_ARITHMETIC_H_
 #define ROMAN_ARITHMETIC_H_
