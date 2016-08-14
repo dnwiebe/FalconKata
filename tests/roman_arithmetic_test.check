@@ -26,8 +26,27 @@ int to42Happy (const char* roman, int* arabic) {
   return mockRtoA (roman, arabic, 42, 0);
 }
 
+int to42SadFirst (const char* roman, int* arabic) {
+  return mockRtoA (roman, arabic, -1, 1);
+}
+
+int sadFlag;
+int to42SadSecond (const char* roman, int* arabic) {
+  if (sadFlag == 0) {
+    sadFlag = 1;
+    return mockRtoA (roman, arabic, 42, 0);
+  }
+  else {
+    return mockRtoA (roman, arabic, -1, 1);
+  }
+}
+
 int toXLIIHappy (int arabic, char* roman, int len) {
   return mockAtoR (arabic, roman, len, "XLII", 0);
+}
+
+int toXLIISad (int arabic, char* roman, int len) {
+  return mockAtoR (arabic, roman, len, "booga", 1);
 }
 
 #test additionWorks
@@ -54,3 +73,36 @@ int toXLIIHappy (int arabic, char* roman, int len) {
   ck_assert_str_eq (record[2], "0");
   ck_assert_str_eq (result, "XLII");
 
+#test handlesUnhappyFirstRtoAConverter
+  ConversionPair pair = {to42SadFirst, toXLIIHappy};
+  char result[80];
+
+  strcpy (result, "..");
+  
+  int status = addRoman (&pair, "Bonnie", "Clyde", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 1);
+  ck_assert_str_eq (result, "..");
+
+#test handlesUnhappySecondRtoAConverter
+  ConversionPair pair = {to42SadSecond, toXLIIHappy};
+  char result[80];
+
+  sadFlag = 0;
+  strcpy (result, "..");
+  
+  int status = addRoman (&pair, "Bonnie", "Clyde", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 1);
+  ck_assert_str_eq (result, "..");
+
+#test handlesUnhappyAtoRConverter
+  ConversionPair pair = {to42Happy, toXLIISad};
+  char result[80];
+
+  strcpy (result, "..");
+  
+  int status = addRoman (&pair, "Bonnie", "Clyde", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 1);
+  ck_assert_str_eq (result, "booga");
