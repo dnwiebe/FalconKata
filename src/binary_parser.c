@@ -119,6 +119,10 @@ int PBO_UNKNOWN_OPERATOR = 2;
 int PBO_OPERATOR_FAILED = 3;
 int PBO_OUTPUT_TRUNCATED = 4;
 
+/********************/
+/* PUBLIC INTERFACE */
+/********************/
+
 int performBinaryOperations (const BinaryOperation* operations, int count, const char* input, char* result, int len) {
   const char* remainingInput = input;
   char line[80];

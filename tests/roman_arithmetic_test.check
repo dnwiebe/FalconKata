@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include "roman_arithmetic.h"
+
+char record[10][80];
+int recordCount = 0;
+void recordString (const char* string) {
+  if (recordCount >= 10) {return;}
+  strncpy (record[recordCount++], string, 80);
+}
+
+int mockRtoA (const char* roman, int* arabic, int expectedArabic, int returnValue) {
+  recordString (roman);
+  *arabic = expectedArabic;
+  return returnValue;
+}
+
+int mockAtoR (int arabic, char* roman, int len, const char* expectedRoman, int returnValue) {
+  char buf[80];
+  snprintf (buf, sizeof (buf), "%d", arabic);
+  recordString (buf);
+  strncpy (roman, expectedRoman, len);
+  return returnValue;
+}
+
+int to42Happy (const char* roman, int* arabic) {
+  return mockRtoA (roman, arabic, 42, 0);
+}
+
+int toXLIIHappy (int arabic, char* roman, int len) {
+  return mockAtoR (arabic, roman, len, "XLII", 0);
+}
+
+#test additionWorks
+  ConversionPair pair = {to42Happy, toXLIIHappy};
+  char result[80];
+
+  int status = addRoman (&pair, "Bonnie", "Clyde", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 0);
+  ck_assert_str_eq (record[0], "Bonnie");
+  ck_assert_str_eq (record[1], "Clyde");
+  ck_assert_str_eq (record[2], "84");
+  ck_assert_str_eq (result, "XLII");
+
+#test subtractionWorks
+  ConversionPair pair = {to42Happy, toXLIIHappy};
+  char result[80];
+
+  int status = subtractRoman (&pair, "Bonnie", "Clyde", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 0);
+  ck_assert_str_eq (record[0], "Bonnie");
+  ck_assert_str_eq (record[1], "Clyde");
+  ck_assert_str_eq (record[2], "0");
+  ck_assert_str_eq (result, "XLII");
+

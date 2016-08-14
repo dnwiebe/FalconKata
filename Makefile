@@ -8,10 +8,10 @@ TEST_CFLAGS=-I$(SRC) -g -Wall
 TARGET=target
 PROD_TARGET=$(TARGET)
 TEST_TARGET=$(TARGET)/$(TEST)
-HEADERS=src/binary_parser.h
-PROD_OBJECTS=$(PROD_TARGET)/binary_parser.o
+HEADERS=$(SRC)/binary_parser.h $(SRC)/roman_arithmetic.h
+PROD_OBJECTS=$(PROD_TARGET)/binary_parser.o $(PROD_TARGET)/roman_arithmetic.o
 PROD_MAIN_OBJECT=$(PROD_TARGET)/main.o
-TEST_EXECS=$(TEST_TARGET)/story_tests $(TEST_TARGET)/binary_parser_test
+TEST_EXECS=$(TEST_TARGET)/story_tests $(TEST_TARGET)/binary_parser_test $(TEST_TARGET)/roman_arithmetic_test
 	
 .PHONY: pre-build prod test all
 
