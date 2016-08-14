@@ -15,7 +15,7 @@ const char* nextLine (const char* remainingInput, char* line, int len) {
 }
 
 int isSpace (char c) {
-  return (c == ' ') || (c == '\t');
+  return (c == ' ') || (c == '\t') || (c == '\n');
 }
 
 int findSubstring (char* fromHere, char** begin, char** end, int canEnd) {
@@ -38,10 +38,9 @@ int parseLine (char* line, char** leftOperand, char** operator, char** rightOper
 
   for (i = 0; i < 3; i++) {
     foundProblem = findSubstring (fromHere, &begins[i], &ends[i], i == 2);
-    if (foundProblem) {break;}
+    if (foundProblem) {return 1;}
     fromHere = ends[i] + 1;
   }
-  if (foundProblem) {return 1;}
 
   *leftOperand = begins[0]; *ends[0] = 0;
   *operator = begins[1]; *ends[1] = 0;

@@ -129,7 +129,7 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
   char* operator = initialValue;
   char* rightOperand = initialValue;
   
-  strncpy (line, "first second third", sizeof (line));
+  strncpy (line, "first second\tthird\n", sizeof (line));
   
   int result = parseLine (line, &leftOperand, &operator, &rightOperand);
   
