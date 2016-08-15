@@ -36,23 +36,40 @@ const BinaryOperation operations[] = {
   {"&", &ampersandOperation}
 };
 
-const char* nextLine (const char* remainingInput, char* line, int len);
 int parseLine (char* line, char** leftOperand, char** operand, char** rightOperand);
 const BinaryOperation* selectOperation (const BinaryOperation operations[], int count, const char* operator);
 
-#test parsesGoodInput
+#test parsesGoodInput1
   char result[80];
   
-  int status = performBinaryOperations (operations, 2, " Stanley  & Emily \nMorgan %\tKim\n", result, sizeof (result));
+  int status = performBinaryOperations (operations, 2, " Stanley  & Emily ", result, sizeof (result));
   
   ck_assert_int_eq (status, 0);
-  ck_assert_str_eq (result, "ampersand\npercent\n");
+  ck_assert_str_eq (result, "ampersand");
   ck_assert_str_eq (record[0], "Stanley");
   ck_assert_str_eq (record[1], "ampersand");
   ck_assert_str_eq (record[2], "Emily");
-  ck_assert_str_eq (record[3], "Morgan");
-  ck_assert_str_eq (record[4], "percent");
-  ck_assert_str_eq (record[5], "Kim");
+
+#test parsesGoodInput2
+  char result[80];
+  
+  int status = performBinaryOperations (operations, 2, " Morgan %\tKim", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 0);
+  ck_assert_str_eq (result, "percent");
+  ck_assert_str_eq (record[0], "Morgan");
+  ck_assert_str_eq (record[1], "percent");
+  ck_assert_str_eq (record[2], "Kim");
+  
+#test handlesEmptyInput
+  char result[80];
+  
+  strncpy (result, "booga", sizeof (result));
+  
+  int status = performBinaryOperations (operations, 2, "", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 0);
+  ck_assert_str_eq (result, "");
 
 #test truncatesOutputAndComplainsIfProvidedSpaceTooSmall
   char result[6];
@@ -68,18 +85,18 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
 #test copiesInvalidInputToOutputWithoutModification
   char result[80];
   
-  int status = performBinaryOperations (operations, 2, "Booga booga!\nMorgan % Kim\n", result, sizeof (result));
+  int status = performBinaryOperations (operations, 2, "Booga booga!", result, sizeof (result));
   
   ck_assert_int_eq (status, PBO_INVALID_INPUT);
-  ck_assert_str_eq (result, "Booga booga!\npercent\n");
+  ck_assert_str_eq (result, "Booga booga!");
 
 #test copiesInputWithUnknownOperatorToOutputWithoutModification
   char result[80];
   
-  int status = performBinaryOperations (operations, 2, "Tom * Becky\n", result, sizeof (result));
+  int status = performBinaryOperations (operations, 2, "Tom * Becky", result, sizeof (result));
   
   ck_assert_int_eq (status, PBO_UNKNOWN_OPERATOR);
-  ck_assert_str_eq (result, "Tom * Becky\n");
+  ck_assert_str_eq (result, "Tom * Becky");
 
 #test copiesInputToOutputWithoutModificationWhenOperatorFails
   char result[80];
@@ -87,40 +104,10 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
     {"!", &failingOperation}
   };
   
-  int status = performBinaryOperations (operations, 1, "up ! set\n", result, sizeof (result));
+  int status = performBinaryOperations (operations, 1, "up ! set", result, sizeof (result));
   
   ck_assert_int_eq (status, PBO_OPERATOR_FAILED);
-  ck_assert_str_eq (result, "up ! set\n");
-
-#test nextLineHandlesStringWithoutNewline
-  char line[80];
-  char* input = "No terminating newline";
-  
-  const char* result = nextLine (input, line, sizeof (line));
-  
-  ck_assert_str_eq (line, "No terminating newline");
-  ck_assert_int_eq (result, input + strlen (input));
-  ck_assert_int_eq (*result, 0);
-
-#test nextLineHandlesAttemptedOverrun
-  char line[8];
-  char* input = "Overrunning";
-  
-  const char* result = nextLine (input, line, sizeof (line));
-  
-  ck_assert_str_eq (line, "Overrun");
-  ck_assert_int_eq (result, input + 7);
-  ck_assert_int_eq (*result, 'n');
-
-#test nextLineHandlesJustBarelyNotOverrun
-  char line[10];
-  char* input = "Just fits";
-  
-  const char* result = nextLine (input, line, sizeof (line));
-  
-  ck_assert_str_eq (line, "Just fits");
-  ck_assert_int_eq (result, input + 9);
-  ck_assert_int_eq (*result, 0);
+  ck_assert_str_eq (result, "up ! set");
   
 #test parseLineHandlesGoodInput
   char line[80];
@@ -129,7 +116,7 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
   char* operator = initialValue;
   char* rightOperand = initialValue;
   
-  strncpy (line, "first second\tthird\n", sizeof (line));
+  strncpy (line, "first second\tthird", sizeof (line));
   
   int result = parseLine (line, &leftOperand, &operator, &rightOperand);
   

@@ -1,0 +1,18 @@
+- INSTRUCTIONS FOR UBUNTU 14.04 -
+
+Make sure check is installed:
+
+$ sudo apt-get install check
+
+In the base directory (the one containing src and tests), do this to build prod and tests and run the tests:
+
+$ make all
+
+The prod executable will be ./target/falconkata.  Pipe in one or more problems of the form:
+
+<Roman numeral> + <Roman numeral>\n
+<Roman numeral> - <Roman numeral>\n
+
+Use only uppercase.  Make sure you have one or more whitespace characters surrounding the operator.
+
+The output will be a sequence of Roman numerals, each on a line by itself, in the same order as the input problems.  If something is invalid about an input problem, its output will be a line containing the input problem prefixed by a #.

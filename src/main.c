@@ -24,11 +24,12 @@ int readLine (int hdl, char* line, int len) {
   char* p = line;
 
   while ((read (hdl, &c, 1) > 0) && (p - line < len - 1)) {
-    *p++ = c;
-    if (*(p - 1) == '\n') {
+    *p = c;
+    if (*p == '\n') {
       *p = 0;
       return 0;
     }
+    p++;
   }
   *p = 0;
   return 1;
@@ -47,10 +48,10 @@ int main (int argc, char* argv[]) {
             inputLine, outputLine, sizeof (outputLine));
     programStatus = programStatus || status;
     if (status == 0) {
-      printf ("%s", outputLine);
+      printf ("%s\n", outputLine);
     }
     else {
-      printf ("# %s", outputLine);
+      printf ("# %s\n", outputLine);
     }
   } while (inputStatus == 0);
 
