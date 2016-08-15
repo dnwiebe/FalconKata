@@ -47,10 +47,6 @@ const ValueElement* findElementWithPrefix (const char* p) {
   return NULL;
 }
 
-int RC_INVALID_ROMAN_NUMERAL = 1;
-int RC_NUMBER_OUT_OF_RANGE = 2;
-int RC_OUTPUT_OVERRUN = 3;
-
 /********************/
 /* PUBLIC INTERFACE */
 /********************/

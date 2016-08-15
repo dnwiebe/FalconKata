@@ -80,11 +80,6 @@ int formAnswer (const BinaryOperation* operations, int count, const char* line, 
   return returnValue;
 }
 
-int PBO_INVALID_INPUT = 1;
-int PBO_UNKNOWN_OPERATOR = 2;
-int PBO_OPERATOR_FAILED = 3;
-int PBO_OUTPUT_TRUNCATED = 4;
-
 /********************/
 /* PUBLIC INTERFACE */
 /********************/

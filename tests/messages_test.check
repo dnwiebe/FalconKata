@@ -1,0 +1,20 @@
+
+#include "binary_parser.h"
+#include "converters.h"
+#include "messages.h"
+
+#test returnsProperMessages
+  ck_assert_str_eq (messageFor (PBO_INVALID_INPUT), "Can't parse into binary-op problem");
+  ck_assert_str_eq (messageFor (PBO_UNKNOWN_OPERATOR), "Unrecognized binary operator");
+  ck_assert_str_eq (messageFor (PBO_OPERATOR_FAILED), "Operation failure");
+  ck_assert_str_eq (messageFor (PBO_OUTPUT_TRUNCATED), "Operation output truncated");
+
+  ck_assert_str_eq (messageFor (RC_INVALID_ROMAN_NUMERAL), "Invalid Roman numeral");
+  ck_assert_str_eq (messageFor (RC_NUMBER_OUT_OF_RANGE), "Roman numeral out of range");
+  ck_assert_str_eq (messageFor (RC_OUTPUT_OVERRUN), "Conversion output overrun");
+
+#test returnsExpectedMessageForBadStatus
+  ck_assert_str_eq (messageFor (-1), "Unrecognized status");
+
+#test returnsExpectedMessageForSuccess
+  ck_assert_str_eq (messageFor (0), "Success");

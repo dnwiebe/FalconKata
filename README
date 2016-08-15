@@ -16,3 +16,7 @@ The prod executable will be ./target/falconkata.  Pipe in one or more problems o
 Use only uppercase.  Make sure you have one or more whitespace characters surrounding the operator.
 
 The output will be a sequence of Roman numerals, each on a line by itself, in the same order as the input problems.  If something is invalid about an input problem, its output will be a line containing the input problem prefixed by a #.
+
+- INSTRUCTIONS FOR OTHER OPERATING SYSTEMS -
+
+An obsolete operating system was deliberately specified for this kata. OS/X? Docker under a modern OS? Windows? Yer on yer own.
