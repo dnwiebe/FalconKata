@@ -54,35 +54,29 @@ int wrap (const char* line, char* answer, int len, int returnValue) {
   return returnValue;
 }
 
-int processLine (const BinaryOperation* operations, int count, const char* line, char* result, int len) {
+int formAnswer (const BinaryOperation* operations, int count, const char* line, char* answer, int len) {
   char lineCopy[80];
   char* leftOperand;
   char* operator;
   char* rightOperand;
   const BinaryOperation* operation;
-  char answer[80];
   int returnValue = 0;
 
   do {
     strncpy (lineCopy, line, sizeof (lineCopy));
     if (parseLine (lineCopy, &leftOperand, &operator, &rightOperand) != 0) {
-      returnValue = wrap (line, answer, sizeof (answer), PBO_INVALID_INPUT); break;
+      returnValue = wrap (line, answer, len, PBO_INVALID_INPUT); break;
     }
 
     operation = selectOperation (operations, count, operator);
     if (operation == NULL) {
-      returnValue = wrap (line, answer, sizeof (answer), PBO_UNKNOWN_OPERATOR); break;
+      returnValue = wrap (line, answer, len, PBO_UNKNOWN_OPERATOR); break;
     }
 
-    if (operation->operation (leftOperand, rightOperand, answer, sizeof (answer)) != 0) {
-      returnValue = wrap (line, answer, sizeof (answer), PBO_OPERATOR_FAILED); break;
+    if (operation->operation (leftOperand, rightOperand, answer, len) != 0) {
+      returnValue = wrap (line, answer, len, PBO_OPERATOR_FAILED); break;
     }
   } while (0);
-
-  strncpy (result, answer, len - 1);
-  if (strlen (answer) > len - 1) {
-    returnValue = PBO_OUTPUT_TRUNCATED;
-  }
   return returnValue;
 }
 
@@ -96,9 +90,16 @@ int PBO_OUTPUT_TRUNCATED = 4;
 /********************/
 
 int performBinaryOperations (const BinaryOperation* operations, int count, const char* input, char* result, int len) {
+  int status;
+  char answer[80];
+
   *result = 0;
-
   if (*input == 0) {return 0;}
+  status = formAnswer (operations, count, input, answer, sizeof (answer));
 
-  return processLine (operations, count, input, result, len);
+  strncpy (result, answer, len - 1);
+  if (strlen (answer) > len - 1) {
+    status = PBO_OUTPUT_TRUNCATED;
+  }
+  return status;
 }
