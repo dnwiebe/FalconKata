@@ -28,7 +28,7 @@ int ampersandOperation (const char* leftOperand, const char* rightOperand, char*
 
 int failingOperation (const char* leftOperand, const char* rightOperand, char* result, int len) {
   mockOperation (leftOperand, "exclamation", rightOperand, result, len);
-  return 1;
+  return 47;
 }
 
 const BinaryOperation operations[] = {
@@ -106,7 +106,7 @@ const BinaryOperation* selectOperation (const BinaryOperation operations[], int 
   
   int status = performBinaryOperations (operations, 1, "up ! set", result, sizeof (result));
   
-  ck_assert_int_eq (status, PBO_OPERATOR_FAILED);
+  ck_assert_int_eq (status, 47);
   ck_assert_str_eq (result, "up ! set");
   
 #test parseLineHandlesGoodInput

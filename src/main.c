@@ -3,6 +3,7 @@
 #include "binary_parser.h"
 #include "roman_arithmetic.h"
 #include "converters.h"
+#include "messages.h"
 
 ConversionPair conversionPair = {convertRtoA, convertAtoR};
 
@@ -51,7 +52,7 @@ int main (int argc, char* argv[]) {
       printf ("%s\n", outputLine);
     }
     else {
-      printf ("# %s\n", outputLine);
+      printf ("# %s (%s)\n", outputLine, messageFor (status));
     }
   } while (inputStatus == 0);
 

@@ -1,8 +1,8 @@
 III
-# Booga booga
-# Stanley % Melanie
+# Booga booga (Can't parse into binary-op problem)
+# Stanley % Melanie (Unrecognized binary operator)
 VII
-# MMMCMXCIX + I
+# MMMCMXCIX + I (Roman numeral out of range)
 MMMCMXCVIII
-# XVII + K
+# XVII + K (Invalid Roman numeral)
 

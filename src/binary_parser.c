@@ -73,8 +73,9 @@ int formAnswer (const BinaryOperation* operations, int count, const char* line, 
       returnValue = wrap (line, answer, len, PBO_UNKNOWN_OPERATOR); break;
     }
 
-    if (operation->operation (leftOperand, rightOperand, answer, len) != 0) {
-      returnValue = wrap (line, answer, len, PBO_OPERATOR_FAILED); break;
+    returnValue = operation->operation (leftOperand, rightOperand, answer, len);
+    if (returnValue != 0) {
+      returnValue = wrap (line, answer, len, returnValue); break;
     }
   } while (0);
   return returnValue;

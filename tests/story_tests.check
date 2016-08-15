@@ -28,7 +28,7 @@ void storyTest (const char* problem, const char* answer, int expectedStatus) {
   storyTest ("MMCXLVIII - MMII", "CXLVI\n", 0);
   
 #test handlesBadInput
-  storyTest ("Booga booga", "# Booga booga\n", 1); // Unparseable line
-  storyTest ("II & III", "# II & III\n", 1); // Unrecognized operator
-  storyTest ("II - K", "# II - K\n", 1); // Bad Roman numeral
-  storyTest ("MM + MM", "# MM + MM\n", 1); // Overflow
+  storyTest ("Booga booga", "# Booga booga (Can't parse into binary-op problem)\n", 1);
+  storyTest ("II & III", "# II & III (Unrecognized binary operator)\n", 1);
+  storyTest ("II - K", "# II - K (Invalid Roman numeral)\n", 1);
+  storyTest ("MM + MM", "# MM + MM (Roman numeral out of range)\n", 1);
