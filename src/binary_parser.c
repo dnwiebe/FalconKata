@@ -49,12 +49,16 @@ const BinaryOperation* selectOperation (const BinaryOperation* operations, int c
   return NULL;
 }
 
+int wrap (const char* line, char* answer, int len, int returnValue) {
+  strncpy (answer, line, len);
+  return returnValue;
+}
+
 int processLine (const BinaryOperation* operations, int count, const char* line, char* result, int len) {
   char lineCopy[80];
   char* leftOperand;
   char* operator;
   char* rightOperand;
-  int status;
   const BinaryOperation* operation;
   char answer[80];
   int returnValue = 0;
@@ -62,22 +66,16 @@ int processLine (const BinaryOperation* operations, int count, const char* line,
   do {
     strncpy (lineCopy, line, sizeof (lineCopy));
     if (parseLine (lineCopy, &leftOperand, &operator, &rightOperand) != 0) {
-      strncpy (answer, line, sizeof (answer));
-      returnValue = PBO_INVALID_INPUT;
-      break;
+      returnValue = wrap (line, answer, sizeof (answer), PBO_INVALID_INPUT); break;
     }
 
     operation = selectOperation (operations, count, operator);
     if (operation == NULL) {
-      strncpy (answer, line, sizeof (answer));
-      returnValue = PBO_UNKNOWN_OPERATOR;
-      break;
+      returnValue = wrap (line, answer, sizeof (answer), PBO_UNKNOWN_OPERATOR); break;
     }
 
     if (operation->operation (leftOperand, rightOperand, answer, sizeof (answer)) != 0) {
-      strncpy (answer, line, sizeof (answer));
-      returnValue = PBO_OPERATOR_FAILED;
-      break;
+      returnValue = wrap (line, answer, sizeof (answer), PBO_OPERATOR_FAILED); break;
     }
   } while (0);
 
