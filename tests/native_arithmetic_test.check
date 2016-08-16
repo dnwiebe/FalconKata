@@ -1,12 +1,41 @@
 
 #include "native_arithmetic.h"
 
-#test addsGoodNumbers
+void successfullyAdds (const char* augend, const char* addend, const char* expectedSum) {
   char result[80];
   int status;
   
-  status = addNative ("XIV", "IV", result, sizeof (result));
+  status = addNative (augend, addend, result, sizeof (result));
   
   ck_assert_int_eq (status, 0);
-  ck_assert_str_eq (result, "XVIII");
+  ck_assert_str_eq (result, expectedSum);
+}
+
+#test addsSimpleNumbers
+  successfullyAdds ("I", "II", "III");
+    
+#test combinesOvernumerousDigitsCorrectly
+  successfullyAdds ("III", "II", "V");
+  successfullyAdds ("XXX", "XX", "L");
+  successfullyAdds ("CCC", "CC", "D");
+  
+  successfullyAdds ("V", "V", "X");
+  successfullyAdds ("L", "L", "C");
+  successfullyAdds ("D", "D", "M");
+
+#test combinesButOneDigitsCorrectly
+  successfullyAdds ("III", "I", "IV");
+  successfullyAdds ("XXX", "X", "XL");
+  successfullyAdds ("CCC", "C", "CD");
+  
+  successfullyAdds ("V", "I", "VI");
+  successfullyAdds ("L", "I", "LI");
+  successfullyAdds ("D", "I", "DI");
+
+#test iteratesToDisplayFormAsNeces
+  successfullyAdds ("IIIIIIIIII", "IIIIIIIIII", "XX");
+
+#test handlesAdditionsThatRequireSorting
+  successfullyAdds ("MMDCCLXXVII", "MCXI", "MMMDCCCLXXXVIII");
+  
   
