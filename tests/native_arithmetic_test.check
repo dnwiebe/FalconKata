@@ -1,0 +1,12 @@
+
+#include "native_arithmetic.h"
+
+#test addsGoodNumbers
+  char result[80];
+  int status;
+  
+  status = addNative ("XIV", "IV", result, sizeof (result));
+  
+  ck_assert_int_eq (status, 0);
+  ck_assert_str_eq (result, "XVIII");
+  

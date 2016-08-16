@@ -9,9 +9,9 @@ TARGET=target
 PROD_TARGET=$(TARGET)
 TEST_TARGET=$(TARGET)/$(TEST)
 HEADERS=$(SRC)/binary_parser.h $(SRC)/conversion_arithmetic.h
-PROD_OBJECTS=$(PROD_TARGET)/binary_parser.o $(PROD_TARGET)/conversion_arithmetic.o $(PROD_TARGET)/converters.o $(PROD_TARGET)/messages.o
+PROD_OBJECTS=$(PROD_TARGET)/binary_parser.o $(PROD_TARGET)/conversion_arithmetic.o $(PROD_TARGET)/native_arithmetic.o $(PROD_TARGET)/converters.o $(PROD_TARGET)/messages.o
 PROD_MAIN_OBJECT=$(PROD_TARGET)/main.o
-TEST_EXECS=$(TEST_TARGET)/story_tests $(TEST_TARGET)/binary_parser_test $(TEST_TARGET)/conversion_arithmetic_test $(TEST_TARGET)/converters_test $(TEST_TARGET)/messages_test
+TEST_EXECS=$(TEST_TARGET)/story_tests $(TEST_TARGET)/binary_parser_test $(TEST_TARGET)/conversion_arithmetic_test $(TEST_TARGET)/native_arithmetic_test $(TEST_TARGET)/converters_test $(TEST_TARGET)/messages_test
 	
 .PHONY: prod test all
 
