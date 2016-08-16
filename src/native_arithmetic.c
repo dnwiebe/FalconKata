@@ -15,8 +15,14 @@ typedef struct {
 	int status;
 } DisplayFormState;
 
+static const char* POWERS_OF_TEN = "MCXI";
+static const char* MULTIPLES_OF_FIVE = "DLV";
+static const char* REVERSE_SORT_ORDER = "IVXLCDM";
+
 int isButOneOptimized (char digit) {
-	return (strchr ("IXC", digit) == NULL) ? 0 : 1;
+	// TEST: bad digit
+	// TEST: digit M
+	return (strchr (POWERS_OF_TEN, digit) == NULL) ? 0 : 1;
 }
 
 void outputMultiple (DisplayFormState* state) {
@@ -30,7 +36,9 @@ void outputMultiple (DisplayFormState* state) {
 }
 
 int nextHigherDigitMultiplier (char digit) {
-	if (strchr ("MCXI", digit) == NULL) {
+	// TEST: bad digit
+	// TEST: digit M
+	if (strchr (POWERS_OF_TEN, digit) == NULL) {
 		return 2;
 	}
 	return 5;
@@ -38,13 +46,14 @@ int nextHigherDigitMultiplier (char digit) {
 
 char nextHigherDigitThan (char digit) {
 	// TEST: bad digit
-	// TEST: digit M
-	char* p = strchr ("IVXLCDM", digit);
-	return *(p + 1);
+	if (digit == 'M') {return 1;}
+	char* p = strchr (REVERSE_SORT_ORDER, digit);
+	char next = *(p + 1);
+	return next;
 }
 
 int countLimitFor (char digit) {
-	if (strchr ("MCXI", digit) == NULL) {
+	if (strchr (POWERS_OF_TEN, digit) == NULL) {
 		return 1;
 	}
 	return 3;
@@ -103,7 +112,6 @@ int toDisplayForm (const char* expandedForm, char* displayForm, int len) {
 	return 0;
 }
 
-static const char* SORT_ORDER = "MDCLXVI";
 int sortDigits (const char* unsorted, char* sorted, int len) {
 	char t;
 	char* p;
@@ -115,12 +123,12 @@ int sortDigits (const char* unsorted, char* sorted, int len) {
 	strncpy (sorted, unsorted, len);
 	// TEST: strlen (unsorted) == 0
 	for (p = sorted; *p != 0; p++) {
-		op = strchr (SORT_ORDER, *p);
-		// TEST: *op == 0
+		op = strchr (REVERSE_SORT_ORDER, *p);
+		// TEST: op == NULL
 		for (q = p + 1; *q != 0; q++) {
-			oq = strchr (SORT_ORDER, *q);
-			// TEST: *oq == 0
-			if (op > oq) {
+			oq = strchr (REVERSE_SORT_ORDER, *q);
+			// TEST: oq == NULL
+			if (op < oq) {
 				t = *p;
 				*p = *q;
 				*q = t;
@@ -130,18 +138,41 @@ int sortDigits (const char* unsorted, char* sorted, int len) {
 	return 0;
 }
 
+int toExpandedForm (const char* unexpandedForm, char* expandedForm, int len) {
+	const char* in = unexpandedForm;
+	char* out = expandedForm;
+	char next;
+
+	// TEST: (out - expandedForm) >= len
+	while (*in != 0) {
+		next = *(in + 1);
+		if ((next != 0) && (next == nextHigherDigitThan (*in))) {
+			*out++ = *in; *out++ = *in; *out++ = *in; *out++ = *in;
+			in += 2;
+		}
+		else {
+			*out++ = *in++;
+		}
+	}
+	*out = 0;
+	return 0;
+}
+
 /********************/
 /* PUBLIC INTERFACE */
 /********************/
 
 int addNative (const char* augend, const char* addend, char* sum, int len) {
-	char expandedForm[80];
-	char sorted[80];
+	char buf1[80];
+	char buf2[80];
+	char buf3[80];
 
-	strncpy (expandedForm, augend, len);
-	strncat (expandedForm, addend, len - strlen (augend));
-	sortDigits (expandedForm, sorted, sizeof (sorted));
-	toDisplayForm (sorted, sum, len);
+	toExpandedForm (augend, buf1, sizeof (buf1));
+	toExpandedForm (addend, buf2, sizeof (buf2));
+	strncpy (buf3, buf1, len);
+	strncat (buf3, buf2, len - strlen (buf2));
+	sortDigits (buf3, buf1, sizeof (buf1));
+	toDisplayForm (buf1, sum, len);
 	return 0;
 }
 

@@ -13,6 +13,9 @@ void successfullyAdds (const char* augend, const char* addend, const char* expec
 
 #test addsSimpleNumbers
   successfullyAdds ("I", "II", "III");
+  successfullyAdds ("X", "XX", "XXX");
+  successfullyAdds ("C", "CC", "CCC");
+  successfullyAdds ("M", "MM", "MMM");
     
 #test combinesOvernumerousDigitsCorrectly
   successfullyAdds ("III", "II", "V");
@@ -32,10 +35,11 @@ void successfullyAdds (const char* augend, const char* addend, const char* expec
   successfullyAdds ("L", "I", "LI");
   successfullyAdds ("D", "I", "DI");
 
-#test iteratesToDisplayFormAsNeces
+#test iteratesToDisplayFormAsNecessary
   successfullyAdds ("IIIIIIIIII", "IIIIIIIIII", "XX");
 
 #test handlesAdditionsThatRequireSorting
   successfullyAdds ("MMDCCLXXVII", "MCXI", "MMMDCCCLXXXVIII");
   
-  
+#test handlesAdditionsThatUseButOneFormat
+  successfullyAdds ("CDXLIV", "CDXLIV", "DCCCLXXXVIII");

@@ -3,16 +3,16 @@
 #include <string.h>
 #include "binary_parser.h"
 
-int isSpace (char c) {
+int isWhitespace (char c) {
   return (c == ' ') || (c == '\t') || (c == '\n');
 }
 
-int findSubstring (char* fromHere, char** begin, char** end, int canEnd) {
+int findSubstring (const char* fromHere, char** begin, char** end, int canEnd) {
   char *p = fromHere;
-  while (isSpace (*p) && (*p != 0)) {p++;}
+  while (isWhitespace (*p) && (*p != 0)) {p++;}
   if (*p == 0) {return 1;}
   *begin = p;
-  while (!isSpace (*p) && (*p != 0)) {p++;}
+  while (!isWhitespace (*p) && (*p != 0)) {p++;}
   if ((*p == 0) && !canEnd) {return 1;}
   *end = p;
   return 0;
